@@ -8,49 +8,51 @@ using namespace arma;
 //Llenar la matriz A de acuerdo a la formula
 void llenarMatrizA(mat &A, int Nx, int Nz,double sx, double sy){
     double tmp = 1 + (2*sy) + (2*sx);
-    int node,upper,lower;
-    for(int x=1; x<Nz-1; ++x){        // iterate over rows
-        for(int y=1; y<Nx-1; ++y){    //iterate over cols
-            node = ( (x-1)*(Nx-2) ) + (y-1);
-            upper = node + (Nx-2);
-            lower = node - (Nx-2);
-            A(node, node) =  tmp;
-            if(x==1){
-                A(node, upper) = -sy;
-                if(y==1){                  //bottom-left
-                    A(node, node+1) = -sx;
+    int nodo,superior,inferior;
+    //Empieza en puntos z = x = 1, porque la cero es una condicion
+    //de borde, si se inicia en cero la formula daria indices -1.
+    //Lo anterior se aplica tambien para z = Nz -1 y  x = Nx -1
+    for(int z=1; z<Nz-1; z++){        // iteterar sobre filas
+        for(int x=1; x<Nx-1; x++){    // iterar sobre columnas
+            //PROBLEMA CON SUPERIOR E INFERIOR INDICES NEGATIVOS
+            nodo = ( (z-1)* Nx ) + (x-1);
+            superior = nodo + Nx;
+            inferior = nodo - Nx;
+            A(nodo, nodo) =  tmp;
+            if(z==1){
+                A(nodo, superior) = -sy;
+                if(x==1){                  //bottom-left
+                    A(nodo, nodo+1) = -sx;
                 }
-                else if(y==Nx-2){         //bottom-right
-                    A(node, node-1) =  -sx;
+                else if(x==Nx-2){         //bottom-right
+                    A(nodo, nodo-1) =  -sx;
                 }else{                    //bottom-middle
-                    A(node, node-1) = -sx;
-                    A(node, node+1) = -sx;
+                    A(nodo, nodo-1) = -sx;
+                    A(nodo, nodo+1) = -sx;
                 }
-            }
-            else  if(x==Nz-2){
-                A(node, lower) =  -sy;
-                if(y==1){                 //top-left
-                    A(node, node+1) = -sx;
+            }else  if(z==Nz-2){
+                A(nodo, inferior) =  -sy;
+                if(x==1){                 //top-left
+                    A(nodo, nodo+1) = -sx;
                 }
-                else if(y==Nx-2){        //top-right
-                    A(node, node-1) = -sx;
+                else if(x==Nx-2){        //top-right
+                    A(nodo, nodo-1) = -sx;
                 }else{                   //top-middle
-                    A(node, node-1) = -sx;
-                    A(node, node+1) = -sx;
+                    A(nodo, nodo-1) = -sx;
+                    A(nodo, nodo+1) = -sx;
                 }
-            }
-            else{
-                A(node, lower) = -sy;
-                A(node, upper) = -sy;
-                if(y==1){                //left
-                    A(node, node+1) = -sx;
+            }else{
+                A(nodo, inferior) = -sy;
+                A(nodo, superior) = -sy;
+                if(x==1){                //left
+                    A(nodo, nodo+1) = -sx;
                 }
-                else if(y==Nx-2){       //right
-                    A(node, node-1) = -sx;
+                else if(x==Nx-2){       //right
+                    A(nodo, nodo-1) = -sx;
                 }
                 else{    //complete equation central points
-                    A(node, node-1) = -sx;
-                    A(node, node+1) = -sx;
+                    A(nodo, nodo-1) = -sx;
+                    A(nodo, nodo+1) = -sx;
                 }
             }
         }
@@ -85,7 +87,9 @@ int main(){
     //AX=B;
     vec X = vec(nodos);
     // Condición inicial, lugar(x,z) de la malla donde se pone la temperatura tem0
-    X((Nx * x + z)) = temp0;
+    // x -> derecha - izquierda : horizontal
+    // z -> arriba - abajo : vertial
+    X((Nx * z + x)) = temp0;
 
     double sx = (k*deltaT)/(deltaX*deltaX);
     double sy = (k*deltaT)/(deltaZ*deltaZ);

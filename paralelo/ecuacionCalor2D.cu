@@ -89,6 +89,8 @@ int main(){
 
     double sx = (k*deltaT)/(deltaX*deltaX);
     double sy = (k*deltaT)/(deltaZ*deltaZ);
+    //Llenar matriz A usando CUDA o arrayFire
+    //af::array(3, 3, f_coef);
     llenarMatrizA(A, Nx, Nz, sx, sy);
 
     //Calculo de temperatura de la malla para cada tiempo
