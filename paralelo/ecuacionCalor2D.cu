@@ -1,6 +1,6 @@
 #include<iostream>
 #include<cmath>
-#include<armadillo>
+#include "arrayfire.h"
 
 using namespace std;
 using namespace arma;
@@ -58,7 +58,7 @@ void llenarMatrizA(mat &A, int Nx, int Nz,double sx, double sy){
 }
 
 int main(){
-    
+
     /* 
         Hacer pruebas con variaciones de deltaX, deltaY
         El calculo y las matrices son de los tamaños interiores
@@ -84,23 +84,46 @@ int main(){
     vec B = vec(nodos); 
     //AX=B;
     vec X = vec(nodos);
-    // Condición inicial, lugar donde se pone la temperatura tem0
-    X((Nx*x + z)) = temp0;
+    // Condición inicial, lugar(x,z) de la malla donde se pone la temperatura tem0
+    // x -> derecha - izquierda : horizontal
+    // z -> arriba - abajo : vertial
+    X((Nx * z + x)) = temp0;
 
     double sx = (k*deltaT)/(deltaX*deltaX);
     double sy = (k*deltaT)/(deltaZ*deltaZ);
-    //Llenar matriz A usando CUDA o arrayFire
-    //af::array(3, 3, f_coef);
     llenarMatrizA(A, Nx, Nz, sx, sy);
+
+
+    /* CODIGO ARRAYFIRE */
+    //Se debe especificar la GPU del computador
+    int device = 0;
+    af::setDevice(device);
+    // af::info();
+
+    //Variables para pasar matriz de armadillo a arrayfire
+    double *A_mem = (double*)malloc(nodos*nodos*sizeof(double));
+    double *B_mem = (double*)malloc(nodos*sizeof(double));
+    double *X_mem = (double*)malloc(nodos*sizeof(double));
+    //Pasar matrices a punteros de c++
+    A_mem = A.memptr();
+    B_mem = B.memptr();
+    X_mem = X.memptr();
+    //Creacion de arrays en ArrayFire
+    af::array afA(nodos,nodos,A_mem);
+    af::array afB(nodos,f64);
+    af::array afX(nodos,f64);
+
+    //Poner temperatura inicial
 
     //Calculo de temperatura de la malla para cada tiempo
     for(int t = 0; t < T-1; t++){
         //En el tiempo 0, X contiene la malla con las
         //condiciones iniciales
-        B = X;
-        //Solucion del sistema de ecuaciones usando armadillo
+        afB = afX;
+        //Solucion del sistema de ecuaciones usando ArrayFire
         //X contiene la temperatura en el tiempo t   
-        X = solve(A,B);
+        afX = af::solve(afA,afB);
     }
     return 0;
 }
+
