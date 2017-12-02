@@ -105,10 +105,10 @@ void llenarMatrizAsinArmadillo(double *A, int Nx, int Nz,double sx, double sz){
 //Funcion para imprimir solucion
 //y graficar con python
 void imprimirSolucion(mat &X, int Nx, int Nz, double deltaX, double deltaZ){
-        for(double y=0; y< Nz; ++y){
-            for(double x=0; x<Nx; ++x){
+        for(int y=0; y< Nz; ++y){
+            for(int x=0; x<Nx; ++x){
                 //cout<<X(y*Nx+x)<<" ";
-                cout<<x*deltaZ<<" "<<y*deltaX<<" "<<X(y*Nx+x)<<endl;
+                cout<<y<<" "<<x<<" "<<X(y*Nx+x)<<endl;
             }
             //cout<<endl;
         }         
@@ -138,7 +138,7 @@ int main(){
     */
     double deltaX,deltaZ,deltaT,k, temp0;
     int Nx,Nz,T,nodos, x, z;
-    cin>>deltaX>>deltaZ>>deltaT>>Nx>>Nz>>T>>k>>x>>z;
+    cin>>deltaX>>deltaZ>>deltaT>>Nx>>Nz>>T>>k>>x>>z>>temp0;
 
     //Cantidad de puntos de la malla menos las filas y columnas
     //que componen las condiciones de borde y cuya temperatura es 0
@@ -155,27 +155,27 @@ int main(){
     // x -> derecha - izquierda : horizontal
     // z -> arriba - abajo : vertial
     X((Nx * z) + x) = temp0;
-
+    imprimirSolucion(X, Nz, Nx, deltaX, deltaZ);
     double sx = (k*deltaT)/(deltaX*deltaX);
     double sz = (k*deltaT)/(deltaZ*deltaZ);
 
     /*   
         SIN ARMADILLO
     */
-    double *A_sinArma = (double*)malloc(nodos * nodos * sizeof(double));
-    double *B_sinArma = (double*)malloc(nodos * sizeof(double));
-    double *X_sinArma = (double*)malloc(nodos * sizeof(double));
-    X_sinArma[(Nx * z + x)] = temp0;
-    llenarMatrizAsinArmadillo(A_sinArma, Nx, Nz, sx, sz);
-    cout<<"Matriz A_sinArma: "<<endl;
-    imprimirMatriz(A_sinArma, Nx, Nz);
-    cout<<endl;
+    // double *A_sinArma = (double*)malloc(nodos * nodos * sizeof(double));
+    // double *B_sinArma = (double*)malloc(nodos * sizeof(double));
+    // double *X_sinArma = (double*)malloc(nodos * sizeof(double));
+    // X_sinArma[(Nx * z + x)] = temp0;
+    // llenarMatrizAsinArmadillo(A_sinArma, Nx, Nz, sx, sz);
+    // cout<<"Matriz A_sinArma: "<<endl;
+    // imprimirMatriz(A_sinArma, Nx, Nz);
+    // cout<<endl;
     /* 
         FIN SIN ARMADILLO
     */
     
     llenarMatrizA(A, Nx, Nz, sx, sz);
-    A.print("A:");
+    //A.print("A:");
 
     //Calculo de temperatura de la malla para cada tiempo
     for(int t = 0; t < T; t++){
