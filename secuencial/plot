@@ -1,6 +1,10 @@
 set dgrid3d
-set palette rgb 21,22,23
 set pm3d map
+set cbrange [0 : 1]
 set term jpeg
-set output 'time.jpeg'
-splot 'out' using 1:2:3 with pm3d
+set output './img/time0.jpeg'
+splot './out/out0' using 1:2:3 with pm3d
+set output './img/time1.jpeg'
+splot './out/out1' using 1:2:3 with pm3d
+set output './img/time2.jpeg'
+splot './out/out2' using 1:2:3 with pm3d

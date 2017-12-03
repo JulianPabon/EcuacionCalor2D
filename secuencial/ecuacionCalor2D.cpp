@@ -111,7 +111,7 @@ void imprimirSolucion(mat &X, int Nx, int Nz, double deltaX, double deltaZ){
                 cout<<y<<" "<<x<<" "<<X(y*Nx+x)<<endl;
             }
             //cout<<endl;
-        }         
+        }     
 }
 
 void imprimirMatriz(double *A, int Nx, int Nz){
@@ -136,10 +136,11 @@ int main(){
         temp0: temperatura  a propagar
         x, z: puntos donde empieza la propagacion
     */
-    double deltaX,deltaZ,deltaT,k, temp0;
-    int Nx,Nz,T,nodos, x, z;
-    cin>>deltaX>>deltaZ>>deltaT>>Nx>>Nz>>T>>k>>x>>z>>temp0;
+    double deltaX,deltaZ,deltaT,T, ta, tb,k, temp0;
+    int Nx,Nz, nodos, x, z;
+    cin>>deltaX>>deltaZ>>Nx>>Nz>>ta>>tb>>T>>k>>x>>z>>temp0;
 
+    deltaT = (tb -ta)/T;
     //Cantidad de puntos de la malla menos las filas y columnas
     //que componen las condiciones de borde y cuya temperatura es 0
     nodos = Nx * Nz;
@@ -184,7 +185,10 @@ int main(){
         //Solucion del sistema de ecuaciones usando armadillo
         //X contiene la temperatura en el tiempo t   
         X = solve(A,B);
+        if(t == T/2){
+            imprimirSolucion(X, Nz, Nx, deltaX, deltaZ);
+        }
     }
-    //imprimirSolucion(X, Nz, Nx, deltaX, deltaZ);
+    imprimirSolucion(X, Nz, Nx, deltaX, deltaZ);
     return 0;
 }
