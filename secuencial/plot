@@ -1,7 +1,4 @@
-#!/usr/bin/gnuplot
 set dgrid3d
-#set pm3d interpolate 5,5
-#color en amarillo a rojo
 set palette rgb 21,22,23
 set pm3d map
 set term jpeg

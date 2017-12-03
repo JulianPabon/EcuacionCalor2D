@@ -3,7 +3,6 @@
 #include "arrayfire.h"
 
 using namespace std;
-using namespace arma;
 
 //Llenar la matriz A de acuerdo a la formula
 //LA MATRIZ A SOLO SE CONTRUYE UNA VEZ POR ESO NO ES 
@@ -11,16 +10,18 @@ using namespace arma;
 //Llenar la matriz A de acuerdo a la formula
 //Como los valores de los bordes ya se conocen, 
 //la matriz A solo se construye con los nodos interiores
-void llenarMatrizA(mat &A, int Nx, int Nz,double sx, double sz){
+void llenarMatrizA(double *A, int Nx, int Nz,double sx, double sz){
     double alfa = 1 + (2*sz) + (2*sx);
     int nodo, superior, inferior, derecha, izquierda;
+    int nodos = Nx * Nz; //Cantidad de puntos de la malla
+                         //Dimensiones malla: nodos x nodos
     //Empieza en puntos z = x = 1, porque la cero es una condicion
     //de borde, si se inicia en cero la formula daria indices -1.
     //Lo anterior se aplica tambien para z = Nz -1 y  x = Nx -1
 
     //EMPEZAR ITERADORES EN 1, 1 PARA PODER SSABER CUANDO SE VA A 
     //ESTAR EN LOS NODOS DE FRONTERA
-    for(int j = 1; j <= Nz; j++){        // iteterar sobre filas
+    for(int j = 1; j <= Nz; j++){  // iteterar sobre filas
         for(int i = 1; i <= Nx; i++){    // iterar sobre columnas
             nodo = ( (j-1)* Nx ) + (i-1);
             superior = nodo + Nx;
@@ -34,33 +35,33 @@ void llenarMatrizA(mat &A, int Nx, int Nz,double sx, double sz){
 
             //Ti+1,j, si i==Nx limita con un borde y por lo tanto el valor no se incluye en A
             if(i != Nx){
-                A(nodo, derecha) = -sz;
+                A[( nodo * nodos ) + derecha] = -sz;
             }
             //Ti,j+1, si j==Nz limita con un borde y por lo tanto el valor no se incluye en A
             if(j != Nz){
-                A(nodo, superior) = -sx;
+                A[(nodo * nodos ) + superior] = -sx;
             }
             //Ti,j
-            A(nodo, nodo) = alfa;
+            A[(nodo * nodos) + nodo] = alfa;
             //Ti-1,j, si i==1 limita con un borde y por lo tanto el valor no se incluye en A
             if(i != 1){
-                A(nodo, izquierda) = -sz;
+                A[(nodo * nodos ) + izquierda] = -sz;
             }
             //Ti,j-1, si j==1 limita con un borde y por lo tanto el valor no se incluye en A
             if(j != 1){
-                A(nodo, inferior) = -sx;
+                A[(nodo * nodos ) + inferior] = -sx;
             }
         }
     }
 }
 
 //Funcion para imprimir solucion
-//y graficar con python
-void imprimirSolucion(mat &X, int Nx, int Nz, double deltaX, double deltaZ){
-    for(double y=0; y< Nz; ++y){
-        for(double x=0; x<Nx; ++x){
+//y graficar con gnuplot plot
+void imprimirSolucion(double *X, int Nx, int Nz, double deltaX, double deltaZ){
+    for(int y=0; y< Nz; ++y){
+        for(int x=0; x<Nx; ++x){
             //cout<<X(y*Nx+x)<<" ";
-            cout<<x*deltaZ<<" "<<y*deltaX<<" "<<X(y*Nx+x)<<endl;
+            cout<<y<<" "<<x<<" "<<X[(y * Nx) +x]<<endl;
         }
         //cout<<endl;
     }         
@@ -80,7 +81,7 @@ int main(){
     */
     double deltaX,deltaZ,deltaT,k, temp0;
     int Nx,Nz,T,nodos, x, z;
-    cin>>deltaX>>deltaZ>>deltaT>>Nx>>Nz>>T>>k>>x>>z;
+    cin>>deltaX>>deltaZ>>deltaT>>Nx>>Nz>>T>>k>>x>>z>>temp0;
 
     //Cantidad de puntos de la malla menos las filas y columnas
     //que componen las condiciones de borde y cuya temperatura es 0
@@ -88,19 +89,19 @@ int main(){
 
     // ARMADILLO CREA LAS MATRICES Y VECTORES POR DEFECTO CON CEROS
     //Matriz tridiagonal A
-    mat A = mat(nodos, nodos);
+    double *A = (double*)malloc(nodos * nodos * sizeof(double));
     //Vector B, puntos de la malla con temperaturas conocidas
-    vec B = vec(nodos); 
+    double *B = (double*)malloc(nodos * sizeof(double));
     //AX=B;
-    vec X = vec(nodos);
+    double *X = (double*)malloc(nodos * sizeof(double));
     // Condición inicial, lugar(x,z) de la malla donde se pone la temperatura tem0
     // x -> derecha - izquierda : horizontal
     // z -> arriba - abajo : vertial
-    X((Nx * z + x)) = temp0;
+    X[(Nx * z + x)] = temp0;
 
     double sx = (k*deltaT)/(deltaX*deltaX);
-    double sy = (k*deltaT)/(deltaZ*deltaZ);
-    llenarMatrizA(A, Nx, Nz, sx, sy);
+    double sz = (k*deltaT)/(deltaZ*deltaZ);
+    llenarMatrizA(A, Nx, Nz, sx, sz);
 
 
     /* CODIGO ARRAYFIRE */
@@ -109,18 +110,10 @@ int main(){
     af::setDevice(device);
     // af::info();
 
-    //Variables para pasar matriz de armadillo a arrayfire
-    double *A_mem = (double*)malloc(nodos*nodos*sizeof(double));
-    double *B_mem = (double*)malloc(nodos*sizeof(double));
-    double *X_mem = (double*)malloc(nodos*sizeof(double));
-    //Pasar matrices a punteros de c++
-    A_mem = A.memptr();
-    B_mem = B.memptr();
-    X_mem = X.memptr();
     //Creacion de arrays en ArrayFire
-    af::array afA(nodos,nodos,A_mem);
-    af::array afB(nodos,f64);
-    af::array afX(nodos,f64);
+    af::array afA(nodos,nodos,A);
+    af::array afB(nodos,B);
+    af::array afX(nodos,X);
 
     //Poner temperatura inicial
 
