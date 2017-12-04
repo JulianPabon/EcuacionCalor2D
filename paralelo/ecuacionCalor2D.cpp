@@ -1,7 +1,8 @@
 #include<iostream>
 #include<cmath>
-#include "arrayfire.h"
-
+#include <arrayfire.h>
+//#include <af/cuda.h>
+#include <stdio.h>
 using namespace std;
 using namespace af;
 
@@ -103,14 +104,16 @@ int main(){
     double sx = (k*deltaT)/(deltaX*deltaX);
     double sz = (k*deltaT)/(deltaZ*deltaZ);
     llenarMatrizA(A, Nx, Nz, sx, sz);
-
+	
+//info arrayfire
+info();
 
     /* CODIGO ARRAYFIRE */
     //Se debe especificar la GPU del computador
     int device = 0;
     setDevice(device);
     // info();
-
+	//af::info();
     //Creacion de arrays en ArrayFire
     array afA(nodos,nodos,A);
     array afB(nodos,B);

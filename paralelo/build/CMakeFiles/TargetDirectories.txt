@@ -1,3 +1,0 @@
-/home/danielfms/Documentos/repositorios/EcuacionCalor2D/paralelo/build/CMakeFiles/rebuild_cache.dir
-/home/danielfms/Documentos/repositorios/EcuacionCalor2D/paralelo/build/CMakeFiles/EC_Par.dir
-/home/danielfms/Documentos/repositorios/EcuacionCalor2D/paralelo/build/CMakeFiles/edit_cache.dir
