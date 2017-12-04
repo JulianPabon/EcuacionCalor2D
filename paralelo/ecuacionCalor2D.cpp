@@ -3,6 +3,7 @@
 #include "arrayfire.h"
 
 using namespace std;
+using namespace af;
 
 //Llenar la matriz A de acuerdo a la formula
 //LA MATRIZ A SOLO SE CONTRUYE UNA VEZ POR ESO NO ES 
@@ -79,9 +80,9 @@ int main(){
         temp0: temperatura  a propagar
         x, z: puntos donde empieza la propagacion
     */
-    double deltaX,deltaZ,deltaT,k, temp0;
-    int Nx,Nz,T,nodos, x, z;
-    cin>>deltaX>>deltaZ>>deltaT>>Nx>>Nz>>T>>k>>x>>z>>temp0;
+    double deltaX,deltaZ,deltaT,T, ta, tb,k, temp0;
+    int Nx,Nz, nodos, x, z;
+    cin>>deltaX>>deltaZ>>Nx>>Nz>>ta>>tb>>T>>k>>x>>z>>temp0;
 
     //Cantidad de puntos de la malla menos las filas y columnas
     //que componen las condiciones de borde y cuya temperatura es 0
@@ -107,16 +108,17 @@ int main(){
     /* CODIGO ARRAYFIRE */
     //Se debe especificar la GPU del computador
     int device = 0;
-    af::setDevice(device);
-    // af::info();
+    setDevice(device);
+    // info();
 
     //Creacion de arrays en ArrayFire
-    af::array afA(nodos,nodos,A);
-    af::array afB(nodos,B);
-    af::array afX(nodos,X);
+    array afA(nodos,nodos,A);
+    array afB(nodos,B);
+    array afX(nodos,X);
 
-    //Poner temperatura inicial
-
+    //Tiempos
+    time_t start,end;
+    start = clock();
     //Calculo de temperatura de la malla para cada tiempo
     for(int t = 0; t < T-1; t++){
         //En el tiempo 0, X contiene la malla con las
@@ -124,8 +126,11 @@ int main(){
         afB = afX;
         //Solucion del sistema de ecuaciones usando ArrayFire
         //X contiene la temperatura en el tiempo t   
-        afX = af::solve(afA,afB);
+        afX = solve(afA,afB);
     }
+    end = clock();
+    double time_used = ((double) (end - start)) / CLOCKS_PER_SEC;
+    printf("%lf\n", time_used);
     return 0;
 }
 

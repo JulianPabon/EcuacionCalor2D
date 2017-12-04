@@ -156,28 +156,16 @@ int main(){
     // x -> derecha - izquierda : horizontal
     // z -> arriba - abajo : vertial
     X((Nx * z) + x) = temp0;
-    imprimirSolucion(X, Nz, Nx, deltaX, deltaZ);
+    // imprimirSolucion(X, Nz, Nx, deltaX, deltaZ);
     double sx = (k*deltaT)/(deltaX*deltaX);
     double sz = (k*deltaT)/(deltaZ*deltaZ);
-
-    /*   
-        SIN ARMADILLO
-    */
-    // double *A_sinArma = (double*)malloc(nodos * nodos * sizeof(double));
-    // double *B_sinArma = (double*)malloc(nodos * sizeof(double));
-    // double *X_sinArma = (double*)malloc(nodos * sizeof(double));
-    // X_sinArma[(Nx * z + x)] = temp0;
-    // llenarMatrizAsinArmadillo(A_sinArma, Nx, Nz, sx, sz);
-    // cout<<"Matriz A_sinArma: "<<endl;
-    // imprimirMatriz(A_sinArma, Nx, Nz);
-    // cout<<endl;
-    /* 
-        FIN SIN ARMADILLO
-    */
     
     llenarMatrizA(A, Nx, Nz, sx, sz);
     //A.print("A:");
 
+    //Tiempos
+    time_t start,end;
+    start = clock();
     //Calculo de temperatura de la malla para cada tiempo
     for(int t = 0; t < T; t++){
         //En el tiempo 0, X contiene la malla con la condicion inical
@@ -185,10 +173,13 @@ int main(){
         //Solucion del sistema de ecuaciones usando armadillo
         //X contiene la temperatura en el tiempo t   
         X = solve(A,B);
-        if(t == T/2){
-            imprimirSolucion(X, Nz, Nx, deltaX, deltaZ);
-        }
+        // if(t == T/2){
+        //     imprimirSolucion(X, Nz, Nx, deltaX, deltaZ);
+        // }
     }
-    imprimirSolucion(X, Nz, Nx, deltaX, deltaZ);
+    end = clock();
+    double time_used = ((double) (end - start)) / CLOCKS_PER_SEC;
+    printf("%lf\n", time_used);
+    // imprimirSolucion(X, Nz, Nx, deltaX, deltaZ);
     return 0;
 }

@@ -1,0 +1,1 @@
+/usr/bin/c++    -rdynamic CMakeFiles/EC_Par.dir/ecuacionCalor2D.o  -o EC_Par /usr/lib/libaf.so.3.6.0 -ldl 
