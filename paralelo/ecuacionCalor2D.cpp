@@ -4,7 +4,6 @@
 //#include <af/cuda.h>
 #include <stdio.h>
 using namespace std;
-using namespace af;
 
 //Llenar la matriz A de acuerdo a la formula
 //LA MATRIZ A SOLO SE CONTRUYE UNA VEZ POR ESO NO ES 
@@ -106,18 +105,18 @@ int main(){
     llenarMatrizA(A, Nx, Nz, sx, sz);
 	
 //info arrayfire
-info();
+af::info();
 
     /* CODIGO ARRAYFIRE */
     //Se debe especificar la GPU del computador
     int device = 0;
-    setDevice(device);
+    af::setDevice(device);
     // info();
 	//af::info();
     //Creacion de arrays en ArrayFire
-    array afA(nodos,nodos,A);
-    array afB(nodos,B);
-    array afX(nodos,X);
+    af::array afA(nodos,nodos,A);
+    af::array afB(nodos,B);
+    af::array afX(nodos,X);
 
     //Tiempos
     time_t start,end;
@@ -129,7 +128,7 @@ info();
         afB = afX;
         //Solucion del sistema de ecuaciones usando ArrayFire
         //X contiene la temperatura en el tiempo t   
-        afX = solve(afA,afB);
+        afX = af::solve(afA,afB);
     }
     end = clock();
     double time_used = ((double) (end - start)) / CLOCKS_PER_SEC;
