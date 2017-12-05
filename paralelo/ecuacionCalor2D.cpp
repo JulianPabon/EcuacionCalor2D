@@ -104,8 +104,8 @@ int main(){
     double sz = (k*deltaT)/(deltaZ*deltaZ);
     llenarMatrizA(A, Nx, Nz, sx, sz);
 	
-//info arrayfire
-af::info();
+    //info arrayfire
+    af::nfo();
 
     /* CODIGO ARRAYFIRE */
     //Se debe especificar la GPU del computador
@@ -115,8 +115,8 @@ af::info();
 	//af::info();
     //Creacion de arrays en ArrayFire
     af::array afA(nodos,nodos,A);
-    af::array afB(nodos,B);
-    af::array afX(nodos,X);
+    af::array afB(nodos,f64);
+    af::array afX(nodos,f64);
 
     //Tiempos
     time_t start,end;
