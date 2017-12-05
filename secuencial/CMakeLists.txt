@@ -1,3 +1,5 @@
+cmake_minimum_required(VERSION 3.0)
+
 find_package(Armadillo REQUIRED)
 include_directories(${ARMADILLO_INCLUDE_DIRS})
 add_executable(EC_Sec ecuacionCalor2D.cpp)
