@@ -105,7 +105,7 @@ int main(){
     llenarMatrizA(A, Nx, Nz, sx, sz);
 	
     //info arrayfire
-    af::nfo();
+    //af::info();
 
     /* CODIGO ARRAYFIRE */
     //Se debe especificar la GPU del computador
