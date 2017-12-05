@@ -1,7 +1,7 @@
 #include<iostream>
 #include<cmath>
 #include <arrayfire.h>
-//#include <af/cuda.h>
+#include <af/cuda.h>
 #include <stdio.h>
 using namespace std;
 
