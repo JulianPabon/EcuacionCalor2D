@@ -1,8 +1,7 @@
-#include<iostream>
-#include<cmath>
-#include <arrayfire.h>
-#include <af/cuda.h>
-#include <stdio.h>
+
+#include<bits/stdc++.h>
+#include<armadillo>
+#include "arrayfire.h"
 using namespace std;
 
 //Llenar la matriz A de acuerdo a la formula

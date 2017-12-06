@@ -1,9 +1,7 @@
 CMAKE_MINIMUM_REQUIRED(VERSION 3.0)
 PROJECT(foo)
-find_package(Armadillo REQUIRED)
-find_package(ArrayFire REQUIRED)
+FIND_PACKAGE(ArrayFire REQUIRED)
 INCLUDE_DIRECTORIES(${ArrayFire_INCLUDE_DIRS})
-find_package(CUDA  REQUIRED)
-set(CUDA_USE_STATIC_CUDA_RUNTIME OFF)
-cuda_add_executable(EC.out ecuacionCalor2D.cu)
-TARGET_LINK_LIBRARIES(EC.out ${ArrayFire_LIBRARIES} )
+ 
+ADD_EXECUTABLE(EC_2D ecuacionCalor2D.cpp)
+TARGET_LINK_LIBRARIES(EC_2D ${ArrayFire_CUDA_LIBRARIES} )
